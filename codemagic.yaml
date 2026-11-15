@@ -1,0 +1,20 @@
+workflows:
+  deplo-notify-android:
+    name: Deplo Notify - Android APK
+    instance_type: linux_x2
+    max_build_duration: 30
+    environment:
+      flutter: stable
+      java: 17
+    scripts:
+      - name: Generate Android platform files
+        script: |
+          flutter create --platforms=android --org com.deplo --project-name deplo_notify .
+      - name: Get packages
+        script: flutter pub get
+      - name: Patch Android config (permissions, receivers, desugaring)
+        script: python3 patch_android.py
+      - name: Build release APK
+        script: flutter build apk --release
+    artifacts:
+      - build/app/outputs/flutter-apk/*.apk
